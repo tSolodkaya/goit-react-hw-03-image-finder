@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import Notiflix from 'notiflix';
 import PropTypes from 'prop-types';
 import css from './Searchbar.module.css';
 
@@ -8,12 +10,16 @@ class Searchbar extends Component {
   };
 
   handleInputChange = event => {
-    this.setState({ inputSearch: event.target.value });
+    this.setState({ inputSearch: event.target.value.toLowerCase() });
   };
 
   handleSubmit = event => {
     event.preventDefault();
-
+    if (this.state.inputSearch.trim() === '') {
+      return Notiflix.Notify.warning(
+        'Please, type what images do you want to find =)'
+      );
+    }
     this.props.onSubmit(this.state.inputSearch);
     this.setState({ inputSearch: '' });
   };
@@ -21,8 +27,9 @@ class Searchbar extends Component {
   render() {
     return (
       <header className={css.Searchbar}>
-        <form className={css.SearchForm}>
+        <form onSubmit={this.handleSubmit} className={css.SearchForm}>
           <button type="submit" className={css.SearchFormButton}>
+            <FaSearch />
             <span className={css.SearchFormButtonLabel}>Search</span>
           </button>
 

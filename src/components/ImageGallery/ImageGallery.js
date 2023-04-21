@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
 import { Component } from 'react';
-import Notiflix from 'notiflix';
+import Notification from 'components/Notification/Notification';
 import Loader from 'components/Loader/Loader';
 
 import css from './ImageGallery.module.css';
@@ -12,12 +11,14 @@ class ImageGallery extends Component {
     loading: false,
     error: null,
   };
+
   componentDidUpdate(prevProps, nextProps) {
     const prevImageName = prevProps.imageName;
     const nextImageName = this.props.imageName;
 
     if (prevImageName !== nextImageName) {
-      this.setState({ loading: true, images: null });
+      this.setState({ loading: true, images: null, error: null });
+
       fetch(
         `https://pixabay.com/api/?key=14836280-095028a335045ad546bd82bf5&q=${nextImageName}&image_type=photo&page=1&per_page=12`
       )
@@ -43,13 +44,13 @@ class ImageGallery extends Component {
         });
     }
   }
+
   render() {
     const { images, loading, error } = this.state;
-    if (error) {
-      return Notiflix.Notify.failure(error);
-    }
+
     return (
       <>
+        {error && <Notification message={error} type="failure" />}
         {loading && <Loader />}
         <ul className={css.ImageGallery}>
           {images &&

@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import Notiflix from 'notiflix';
-import PropTypes from 'prop-types';
 import css from './Searchbar.module.css';
 
 class Searchbar extends Component {

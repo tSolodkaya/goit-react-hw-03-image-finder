@@ -18,8 +18,38 @@ class App extends Component {
     isLoadMoreShow: false,
     page: 1,
     error: '',
+    images: [],
   };
+  componentDidUpdate(prevProps, prevState) {
+    const prevImageName = prevState.imageName;
+    const nextImageName = this.state.imageName;
+    const prevPage = prevState.page;
+    const nextPage = this.state.page;
 
+    if (prevImageName !== nextImageName || prevPage !== nextPage) {
+      this.toggleLoading();
+
+      imageApi
+        .fetchImageByQuery(nextImageName, nextPage)
+        .then(data => {
+          if (data.total === 0) {
+            return Promise.reject(
+              new Error(`Sorry, we have no images with name ${nextImageName}.`)
+            );
+          }
+
+          this.handleShowLoadMoreBtn(data);
+
+          this.setState(prevState => ({
+            images: [...prevState.images, ...data.hits],
+          }));
+        })
+        .catch(error => this.handleError(error.message))
+        .finally(() => {
+          this.toggleLoading();
+        });
+    }
+  }
   handleFormSubmit = imageName => {
     this.setState({
       imageName,
@@ -41,14 +71,13 @@ class App extends Component {
       largeImageURL: event.target.dataset.src,
       tags: event.target.alt,
     };
-
     this.setState({
       largeImage,
       isShowModal: true,
     });
   };
 
-  handleCloseModal = event => {
+  handleCloseModal = () => {
     this.setState({ isShowModal: false });
   };
 
@@ -68,28 +97,14 @@ class App extends Component {
   };
 
   render() {
-    const {
-      loading,
-      imageName,
-      isShowModal,
-      largeImage,
-      isLoadMoreShow,
-      page,
-      error,
-    } = this.state;
+    const { isShowModal, images, loading, isLoadMoreShow, error, largeImage } =
+      this.state;
 
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.handleFormSubmit} />
         {loading && <Loader />}
-        <ImageGallery
-          imageName={imageName}
-          loading={this.toggleLoading}
-          handleShowModal={this.handleShowModal}
-          page={page}
-          showLoadMore={this.handleShowLoadMoreBtn}
-          saveError={this.handleError}
-        />
+        <ImageGallery images={images} showModal={this.handleShowModal} />
         {isShowModal && (
           <Modal image={largeImage} onClose={this.handleCloseModal} />
         )}

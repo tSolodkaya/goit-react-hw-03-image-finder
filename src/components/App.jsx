@@ -38,10 +38,10 @@ class App extends Component {
             );
           }
 
-          this.handleShowLoadMoreBtn(data);
-
           this.setState(prevState => ({
             images: [...prevState.images, ...data.hits],
+            isLoadMoreShow:
+              this.state.page < Math.ceil(data.total / imageApi.PER_PAGE),
           }));
         })
         .catch(error => this.handleError(error.message))
@@ -79,13 +79,6 @@ class App extends Component {
 
   handleCloseModal = () => {
     this.setState({ isShowModal: false });
-  };
-
-  handleShowLoadMoreBtn = data => {
-    this.setState({
-      isLoadMoreShow:
-        this.state.page < Math.ceil(data.total / imageApi.PER_PAGE),
-    });
   };
 
   handleIncrementPage = () => {

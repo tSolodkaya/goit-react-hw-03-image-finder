@@ -13,12 +13,10 @@ class Modal extends Component {
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
-    window.addEventListener('click', this.handleClick);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
-    window.removeEventListener('click', this.handleClick);
   }
 
   handleKeyDown = e => {
@@ -36,7 +34,7 @@ class Modal extends Component {
   render() {
     const { largeImageURL, tags } = this.props.image;
     return createPortal(
-      <div className={css.Overlay}>
+      <div className={css.Overlay} onClick={this.handleClick}>
         <div className={css.Modal}>
           <img src={largeImageURL} alt={tags} />
         </div>
